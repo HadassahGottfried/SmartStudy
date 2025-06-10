@@ -1,0 +1,484 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1.0.0",
+    "title": "LexBridge API",
+    "description": "LexBridge is a seamless platform that connects clients with verified legal experts, offering secure communication, easy appointment booking, transparent pricing, and comprehensive legal services all in one place."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of users"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created user"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A user"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update user by ID",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user by ID",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Get all categories",
+        "tags": [
+          "Categories"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of categories"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a category",
+        "tags": [
+          "Categories"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created category"
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "get": {
+        "summary": "Get category by ID",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A category"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update category",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated category"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete category",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/prompts": {
+      "get": {
+        "summary": "Get all prompts",
+        "tags": [
+          "Prompts"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of prompts"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new prompt and generate lesson using OpenAI",
+        "tags": [
+          "Prompts"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "category_id": {
+                    "type": "number"
+                  },
+                  "sub_category_id": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created prompt"
+          }
+        }
+      }
+    },
+    "/prompts/{id}": {
+      "get": {
+        "summary": "Get prompt by ID",
+        "tags": [
+          "Prompts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A prompt"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update prompt",
+        "tags": [
+          "Prompts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete prompt",
+        "tags": [
+          "Prompts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    },
+    "/sub_categories": {
+      "get": {
+        "summary": "Get all sub-categories",
+        "tags": [
+          "SubCategories"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of sub-categories"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create sub-category",
+        "tags": [
+          "SubCategories"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "categoryId": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/sub_categories/{id}": {
+      "get": {
+        "summary": "Get sub-category by ID",
+        "tags": [
+          "SubCategories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A sub-category"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update sub-category",
+        "tags": [
+          "SubCategories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "categoryId": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete sub-category",
+        "tags": [
+          "SubCategories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      }
+    }
+  }
+}
