@@ -1,0 +1,46 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String      @id
+  name      String
+  phone     String
+  prompts   Prompt[]
+}
+
+model Category {
+  id             Int           @id @default(autoincrement())
+  name           String
+  subCategories  SubCategory[]
+  prompts        Prompt[]
+}
+
+model SubCategory {
+  id           Int       @id @default(autoincrement())
+  name         String
+  categoryId   Int
+  category     Category  @relation(fields: [categoryId], references: [id])
+  prompts      Prompt[]
+}
+
+model Prompt {
+  id             Int          @id @default(autoincrement())
+  user_id        String
+  prompt         String
+  response       String
+  category_id    Int
+  sub_category_id Int
+  created_at     DateTime     @default(now())
+
+  user           User         @relation(fields: [user_id], references: [id])
+  category       Category     @relation(fields: [category_id], references: [id])
+  subCategory    SubCategory  @relation(fields: [sub_category_id], references: [id])
+}
