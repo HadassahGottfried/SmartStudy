@@ -1,10 +1,10 @@
-import { User } from './types';
 import { UserDAL } from './dal';
+import { User, PublicUser } from './types';
 
 export class UserService {
   private dal = new UserDAL();
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<PublicUser[]> {
     return this.dal.getAllUsers();
   }
 
@@ -12,15 +12,24 @@ export class UserService {
     return this.dal.getUserById(id);
   }
 
-  async createUser(user: User): Promise<User> {
-    return this.dal.createUser(user);
+  async findUsersByName(name: string): Promise<PublicUser[]> {
+    return this.dal.findUsersByName(name);
   }
 
-  async updateUser(id: string, user: Partial<User>): Promise<User> {
-    return this.dal.updateUser(id, user);
+  async createUser(data: Omit<User, 'id'>): Promise<User> {
+    return this.dal.createUser(data);
+  }
+
+  async updateUser(id: string, data: Partial<User>): Promise<User> {
+    return this.dal.updateUser(id, data);
   }
 
   async deleteUser(id: string): Promise<User> {
     return this.dal.deleteUser(id);
+  }
+
+  // מיועד ל-auth בלבד
+  async getUserByPhone(phone: string): Promise<User | null> {
+    return this.dal.getUserByPhone(phone);
   }
 }

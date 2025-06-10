@@ -2,8 +2,7 @@ import {  Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { CustomRequest, UserPayload } from '../resources/users/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
+const JWT_SECRET = process.env.JWT_SECRET!;
 export function authenticateJWT(req: CustomRequest, res: Response, next: NextFunction): void {
   const authHeader = req.headers['authorization'] as string | undefined;
   if (!authHeader) {

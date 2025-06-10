@@ -1,9 +1,9 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Response, NextFunction } from 'express';
 import { UserService } from './service';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { createUserSchema, idParamSchema, updateUserSchema } from './schema';
 import { authenticateJWT } from '../../middlewares/authMiddleware';
-import { apiLimiter } from '../../middlewares/rateLimitMiddleware';
+import { CustomRequest } from './types';
 
 class UserAPI {
   public router = Router();
@@ -14,161 +14,45 @@ class UserAPI {
   }
 
   private initializeRoutes() {
-    /**
- * @swagger
- * /users:
- *   get:
- *     summary: Get all users
- *     tags: [Users]
- *     responses:
- *       200:
- *         description: A list of users
- * */
     this.router.get('/', authenticateJWT, this.getAllUsers);
-    /**
- * @swagger
-    * /users/{id}:
- *   get:
- *     summary: Get user by ID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: A user
- **/
-    this.router.get('/:id', validateRequest({paramsSchema:idParamSchema}),authenticateJWT, this.getUserById);
- /**
- * @swagger
- * /users:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       201:
- *         description: Created user
- * */
-    this.router.post(
-      '/',
-      authenticateJWT,
-      apiLimiter,
-      validateRequest({ bodySchema: createUserSchema }),
-      this.createUser
-    );
- /**
- * @swagger
- * /users:
- *   put:
- *     summary: Update user by ID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       200:
- *         description: Updated user
- **/
-    this.router.put(
-      '/:id',
-      authenticateJWT,
-      apiLimiter,
-      validateRequest({paramsSchema:idParamSchema}),
-      validateRequest({ bodySchema: updateUserSchema }),
-      this.updateUser
-    );
- /**
- * @swagger
- * /users:
- *  *   delete:
- *     summary: Delete user by ID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: User deleted
- **/
-    this.router.delete(
-      '/:id',
-      validateRequest({paramsSchema:idParamSchema}),
-      authenticateJWT,
-      apiLimiter,
-      this.deleteUser
-    );
+    this.router.get('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.getUserById);
+    this.router.get('/search/name', authenticateJWT, this.searchByName);
+    this.router.post('/', authenticateJWT, validateRequest({ bodySchema: createUserSchema }), this.createUser);
+    this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
+    this.router.delete('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.deleteUser);
   }
 
-  private getAllUsers = async (_req: Request, res: Response, _next: NextFunction) => {
+  private getAllUsers = async (_req: CustomRequest, res: Response, _next: NextFunction) => {
     const users = await this.service.getAllUsers();
     res.json(users);
   };
 
-  private getUserById = async (req: Request, res: Response, _next: NextFunction) => {
-    const id = req.params.id;
-  
-      return res.status(400).json({ message: 'Invalid user ID' });
-   
-
-    const user = await this.service.getUserById(id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+  private getUserById = async (req: CustomRequest, res: Response, _next: NextFunction) => {
+    const user = await this.service.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   };
 
-  private createUser = async (req: Request, res: Response, _next: NextFunction) => {
+  private searchByName = async (req: CustomRequest, res: Response, _next: NextFunction) => {
+    const { name } = req.query;
+    if (!name || typeof name !== 'string') return res.status(400).json({ message: 'Invalid name' });
+
+    const users = await this.service.findUsersByName(name);
+    res.json(users);
+  };
+
+  private createUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
     const newUser = await this.service.createUser(req.body);
     res.status(201).json(newUser);
   };
 
-  private updateUser = async (req: Request, res: Response, _next: NextFunction) => {
-    const id = req.params.id;
- 
-      return res.status(400).json({ message: 'Invalid user ID' });
-  
-
-    const updatedUser = await this.service.updateUser(id, req.body);
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json(updatedUser);
+  private updateUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
+    const updated = await this.service.updateUser(req.params.id, req.body);
+    res.json(updated);
   };
 
-  private deleteUser = async (req: Request, res: Response, _next: NextFunction) => {
-    const id = req.params.id;
- 
-      return res.status(400).json({ message: 'Invalid user ID' });
-   
-
-    const deleted = await this.service.deleteUser(id);
-    if (!deleted) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+  private deleteUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
+    await this.service.deleteUser(req.params.id);
     res.status(204).send();
   };
 }

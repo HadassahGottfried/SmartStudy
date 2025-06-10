@@ -1,12 +1,16 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+
 import userRoutes from './resources/users/api';
 import categoryRoutes from './resources/categories/api';
 import subCategoryRoutes from './resources/subCategories/api';
 import promptRoutes from './resources/prompts/api';
-import db from './utils/db-conn'; // חיבור למסד הנתונים (Prisma לדוגמה)
-import config from './utils/config'; // <-- ייבוא קובץ הקונפיג
+import authRoutes from './resources/auth/api'; // ✅ חדש
+
+import db from './utils/db-conn';
+import config from './utils/config';
+
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './utils/swagger-output.json';
 
@@ -16,7 +20,7 @@ class App {
 
   constructor() {
     this.app = express();
-    this.port = config.port;  // <-- שימוש בקונפיג להגדרת פורט
+    this.port = config.port;
 
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -25,19 +29,19 @@ class App {
   }
 
   private initializeMiddlewares(): void {
-    this.app.use(cors({ origin: config.corsOrigin })); // <-- אפשר להגדיר מקור CORS מהקונפיג
+    this.app.use(cors({ origin: config.corsOrigin }));
     this.app.use(morgan('dev'));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
   }
 
   private initializeRoutes(): void {
+    this.app.use('/auth', authRoutes); // ✅ נוסף
     this.app.use('/users', userRoutes);
     this.app.use('/categories', categoryRoutes);
     this.app.use('/sub_categories', subCategoryRoutes);
     this.app.use('/prompts', promptRoutes);
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
   }
 
   private initializeErrorHandling(): void {
@@ -50,7 +54,6 @@ class App {
       }
     );
   }
-
 
   private handleShutdown(): void {
     process.on('SIGINT', async () => {
