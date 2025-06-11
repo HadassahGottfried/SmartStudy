@@ -1,12 +1,13 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
+import express, { Express } from 'express';
+import { corsMiddleware } from './middlewares/corsMiddleware';
+import { logger } from './middlewares/loggingMiddleware';
+import { errorHandler } from './middlewares/errorHandler.middleware';
 
 import userRoutes from './resources/users/api';
 import categoryRoutes from './resources/categories/api';
 import subCategoryRoutes from './resources/subCategories/api';
 import promptRoutes from './resources/prompts/api';
-import authRoutes from './resources/auth/api'; // ✅ חדש
+import authRoutes from './resources/auth/api';
 
 import db from './utils/db-conn';
 import config from './utils/config';
@@ -29,14 +30,14 @@ class App {
   }
 
   private initializeMiddlewares(): void {
-    this.app.use(cors({ origin: config.corsOrigin }));
-    this.app.use(morgan('dev'));
-    this.app.use(express.json());
+    this.app.use(corsMiddleware); // CORS הגדרות
+    this.app.use(logger);         // Logger (morgan)
+    this.app.use(express.json()); // JSON body parser
     this.app.use(express.urlencoded({ extended: true }));
   }
 
   private initializeRoutes(): void {
-    this.app.use('/auth', authRoutes); // ✅ נוסף
+    this.app.use('/auth', authRoutes);
     this.app.use('/users', userRoutes);
     this.app.use('/categories', categoryRoutes);
     this.app.use('/sub_categories', subCategoryRoutes);
@@ -45,14 +46,7 @@ class App {
   }
 
   private initializeErrorHandling(): void {
-    this.app.use(
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error(err);
-        const status = err.status || 500;
-        const message = err.message || 'Internal Server Error';
-        res.status(status).json({ message });
-      }
-    );
+    this.app.use(errorHandler);
   }
 
   private handleShutdown(): void {

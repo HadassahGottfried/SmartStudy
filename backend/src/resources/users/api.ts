@@ -3,6 +3,7 @@ import { UserService } from './service';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { createUserSchema, idParamSchema, updateUserSchema } from './schema';
 import { authenticateJWT } from '../../middlewares/authMiddleware';
+import { apiLimiter } from '../../middlewares/rateLimitMiddleware';
 import { CustomRequest } from './types';
 
 class UserAPI {
@@ -15,11 +16,11 @@ class UserAPI {
 
   private initializeRoutes() {
     this.router.get('/', authenticateJWT, this.getAllUsers);
-    this.router.get('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.getUserById);
+    this.router.get('/:id',  validateRequest({ paramsSchema: idParamSchema }),authenticateJWT, this.getUserById);
     this.router.get('/search/name', authenticateJWT, this.searchByName);
-    this.router.post('/', authenticateJWT, validateRequest({ bodySchema: createUserSchema }), this.createUser);
-    this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
-    this.router.delete('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.deleteUser);
+    this.router.post('/',  apiLimiter, validateRequest({ bodySchema: createUserSchema }),authenticateJWT, this.createUser);
+    this.router.put('/:id', validateRequest({ paramsSchema: idParamSchema }), authenticateJWT,  validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
+    this.router.delete('/:id', validateRequest({ paramsSchema: idParamSchema }), authenticateJWT,  this.deleteUser);
   }
 
   private getAllUsers = async (_req: CustomRequest, res: Response, _next: NextFunction) => {
