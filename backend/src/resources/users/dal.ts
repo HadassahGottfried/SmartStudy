@@ -25,15 +25,11 @@ export class UserDAL {
     });
   }
 
-  async createUser(data: Omit<PrismaUser, 'id'>): Promise<PrismaUser> {
-    return db.prisma.user.create({
-      data: {
-        name: data.name,
-        phone: data.phone,
-        id_number: data.id_number
-      }
-    });
-  }
+  // ✅ נכון - גרסה חדשה
+async createUser(data: { name: string; phone: string }): Promise<PrismaUser> {
+  return db.prisma.user.create({ data });
+}
+
 
   async updateUser(id: string, data: Partial<PrismaUser>): Promise<PrismaUser> {
     return db.prisma.user.update({ where: { id }, data });
@@ -45,5 +41,11 @@ export class UserDAL {
 
   async getUserByPhone(phone: string): Promise<PrismaUser | null> {
     return db.prisma.user.findUnique({ where: { phone } });
+  }
+
+  async getUserByPhoneAndName(phone: string, name: string): Promise<PrismaUser | null> {
+    return db.prisma.user.findFirst({
+      where: { phone, name }
+    });
   }
 }

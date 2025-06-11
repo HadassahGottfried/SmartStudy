@@ -4,7 +4,6 @@ export interface User {
   id?: string;
   name: string;
   phone: string;
-  id_number: string; // מוצפן - תעודת זהות
 }
 
 export interface PublicUser {

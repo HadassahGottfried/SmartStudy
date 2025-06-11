@@ -8,6 +8,10 @@ export class PromptService {
     return this.dal.getAllPrompts();
   }
 
+  async getByUserId(user_id: string): Promise<Prompt[]> {
+    return this.dal.getPromptsByUserId(user_id);
+  }
+
   async getById(id: number): Promise<Prompt | null> {
     return this.dal.getPromptById(id);
   }

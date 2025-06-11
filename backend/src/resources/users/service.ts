@@ -1,35 +1,39 @@
 import { UserDAL } from './dal';
-import { User, PublicUser } from './types';
+import { User as PrismaUser } from '@prisma/client';
 
 export class UserService {
   private dal = new UserDAL();
 
-  async getAllUsers(): Promise<PublicUser[]> {
+  async getAllUsers() {
     return this.dal.getAllUsers();
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUserById(id: string) {
     return this.dal.getUserById(id);
   }
 
-  async findUsersByName(name: string): Promise<PublicUser[]> {
+  async findUsersByName(name: string) {
     return this.dal.findUsersByName(name);
   }
 
-  async createUser(data: Omit<User, 'id'>): Promise<User> {
-    return this.dal.createUser(data);
-  }
+  async registerUser(data: { name: string; phone: string }) {
+  return this.dal.createUser(data);
+}
 
-  async updateUser(id: string, data: Partial<User>): Promise<User> {
+
+  async updateUser(id: string, data: Partial<PrismaUser>) {
     return this.dal.updateUser(id, data);
   }
 
-  async deleteUser(id: string): Promise<User> {
+  async deleteUser(id: string) {
     return this.dal.deleteUser(id);
   }
 
-  // מיועד ל-auth בלבד
-  async getUserByPhone(phone: string): Promise<User | null> {
+  async getUserByPhone(phone: string) {
     return this.dal.getUserByPhone(phone);
+  }
+
+  async getUserByPhoneAndName(phone: string, name: string) {
+    return this.dal.getUserByPhoneAndName(phone, name);
   }
 }

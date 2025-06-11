@@ -9,6 +9,17 @@ export class PromptDAL {
   async getPromptById(id: number): Promise<Prompt | null> {
     return db.prisma.prompt.findUnique({ where: { id } });
   }
+  async getPromptsByUserId(user_id: string): Promise<Prompt[]> {
+  return db.prisma.prompt.findMany({
+    where: { user_id },
+    include: {
+      category: true,
+      subCategory: true,
+    },
+    orderBy: { created_at: 'desc' }
+  });
+}
+
 
   async createPrompt(data: Prompt): Promise<Prompt> {
     return db.prisma.prompt.create({ data });

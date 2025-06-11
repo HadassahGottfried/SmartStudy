@@ -13,10 +13,13 @@ export class CategoryDAL {
   }
 
   async createCategory(data: { name: string }): Promise<Category> {
-    return db.prisma.category.create({
-      data,
-    });
-  }
+  return db.prisma.category.create({
+    data: {
+      name: data.name  
+    }
+  });
+}
+
 
 
   async updateCategory(id: number, category: Partial<Category>): Promise<Category> {

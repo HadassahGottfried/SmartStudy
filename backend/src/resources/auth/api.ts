@@ -1,7 +1,5 @@
-// src/resources/auth/api.ts
 import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { UserService } from '../users/service';
 import { validateRequest } from '../../middlewares/validateRequest';
@@ -19,49 +17,74 @@ class AuthAPI {
   }
 
   private initializeRoutes() {
+    /**
+     * @openapi
+     * /auth/login:
+     *   post:
+     *     summary: Log in a user
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/LoginUser'
+     *     responses:
+     *       200:
+     *         description: Logged in successfully, returns JWT
+     *       401:
+     *         description: Invalid credentials
+     */
     this.router.post('/login', validateRequest({ bodySchema: loginSchema }), this.login);
+
+    /**
+     * @openapi
+     * /auth/register:
+     *   post:
+     *     summary: Register a new user
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/RegisterUser'
+     *     responses:
+     *       201:
+     *         description: Registered successfully, returns JWT
+     */
     this.router.post('/register', validateRequest({ bodySchema: registerSchema }), this.register);
   }
 
   private login = async (req: Request, res: Response) => {
-    const { phone, id_number } = req.body;
+    const { phone, name } = req.body;
 
-    const user = await this.service.getUserByPhone(phone);
-    if (!user || !(await bcrypt.compare(id_number, user.id_number))) {
-      return res.status(401).json({ message: 'Invalid phone or ID number' });
+    const user = await this.service.getUserByPhoneAndName(phone, name);
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    const token = this.generateToken(user);
+    res.json({ token });
+  };
+
+  private register = async (req: Request, res: Response) => {
+    const { name, phone } = req.body;
+
+    const newUser: User = await this.service.registerUser({ name, phone });
+    const token = this.generateToken(newUser);
+    res.status(201).json({ token });
+  };
+
+  private generateToken(user: User): string {
     const payload = {
       id: user.id,
       name: user.name,
       phone: user.phone
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '2h' });
-
-    res.json({ token });
-  };
-
-  private register = async (req: Request, res: Response) => {
-    const { name, phone, id_number } = req.body;
-    const hashedId = await bcrypt.hash(id_number, 10);
-
-    const newUser: User = await this.service.createUser({
-      name,
-      phone,
-      id_number: hashedId
-    });
-
-    const payload = {
-      id: newUser.id,
-      name: newUser.name,
-      phone: newUser.phone
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '2h' });
-
-    res.status(201).json({ token });
-  };
+    return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '2h' });
+  }
 }
 
 export default new AuthAPI().router;

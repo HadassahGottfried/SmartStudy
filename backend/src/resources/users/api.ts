@@ -1,9 +1,8 @@
 import { Router, Response, NextFunction } from 'express';
 import { UserService } from './service';
 import { validateRequest } from '../../middlewares/validateRequest';
-import { createUserSchema, idParamSchema, updateUserSchema } from './schema';
+import {  idParamSchema ,updateUserSchema} from './schema';
 import { authenticateJWT } from '../../middlewares/authMiddleware';
-import { apiLimiter } from '../../middlewares/rateLimitMiddleware';
 import { CustomRequest } from './types';
 
 class UserAPI {
@@ -15,12 +14,109 @@ class UserAPI {
   }
 
   private initializeRoutes() {
+    /**
+     * @openapi
+     * /users:
+     *   get:
+     *     summary: Get all users
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of users
+     */
     this.router.get('/', authenticateJWT, this.getAllUsers);
-    this.router.get('/:id',  validateRequest({ paramsSchema: idParamSchema }),authenticateJWT, this.getUserById);
+
+    /**
+     * @openapi
+     * /users/{id}:
+     *   get:
+     *     summary: Get user by ID
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: id
+     *         in: path
+     *         required: true
+     *         schema:
+     *           type: string
+     *     responses:
+     *       200:
+     *         description: User found
+     *       404:
+     *         description: User not found
+     */
+    this.router.get('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.getUserById);
+
+    /**
+     * @openapi
+     * /users/search/name:
+     *   get:
+     *     summary: Search users by name
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: name
+     *         in: query
+     *         required: true
+     *         schema:
+     *           type: string
+     *     responses:
+     *       200:
+     *         description: List of users matching name
+     */
     this.router.get('/search/name', authenticateJWT, this.searchByName);
-    this.router.post('/',  apiLimiter, validateRequest({ bodySchema: createUserSchema }),authenticateJWT, this.createUser);
-    this.router.put('/:id', validateRequest({ paramsSchema: idParamSchema }), authenticateJWT,  validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
-    this.router.delete('/:id', validateRequest({ paramsSchema: idParamSchema }), authenticateJWT,  this.deleteUser);
+
+    
+
+    /**
+     * @openapi
+     * /users/{id}:
+     *   put:
+     *     summary: Update existing user
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: id
+     *         in: path
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/UpdateUser'
+     *     responses:
+     *       200:
+     *         description: User updated
+     */
+    this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
+
+    /**
+     * @openapi
+     * /users/{id}:
+     *   delete:
+     *     summary: Delete user
+     *     tags: [Users]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - name: id
+     *         in: path
+     *         required: true
+     *         schema:
+     *           type: string
+     *     responses:
+     *       204:
+     *         description: User deleted
+     */
+    this.router.delete('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.deleteUser);
   }
 
   private getAllUsers = async (_req: CustomRequest, res: Response, _next: NextFunction) => {
@@ -37,15 +133,11 @@ class UserAPI {
   private searchByName = async (req: CustomRequest, res: Response, _next: NextFunction) => {
     const { name } = req.query;
     if (!name || typeof name !== 'string') return res.status(400).json({ message: 'Invalid name' });
-
     const users = await this.service.findUsersByName(name);
     res.json(users);
   };
 
-  private createUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
-    const newUser = await this.service.createUser(req.body);
-    res.status(201).json(newUser);
-  };
+ 
 
   private updateUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
     const updated = await this.service.updateUser(req.params.id, req.body);

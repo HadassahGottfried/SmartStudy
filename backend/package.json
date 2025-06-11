@@ -10,7 +10,7 @@
     "openai": "^5.1.1",
     "pg": "^8.16.0",
     "prisma": "^6.9.0",
-    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "zod": "^3.25.56"
   },
@@ -26,6 +26,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.10",
     "@types/pg": "^8.15.4",
+    "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "ts-node": "^10.9.2"
   },
@@ -34,8 +35,8 @@
     "swagger": "ts-node utils/swagger.ts"
   },
   "prisma": {
-  "schema": "src/prisma/schema.prisma"
-},
+    "schema": "src/prisma/schema.prisma"
+  },
   "author": "",
   "license": "ISC",
   "description": ""

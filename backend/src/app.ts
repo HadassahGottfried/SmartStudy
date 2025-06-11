@@ -13,7 +13,7 @@ import db from './utils/db-conn';
 import config from './utils/config';
 
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocument from './utils/swagger-output.json';
+import swaggerSpec from './utils/swagger';
 
 class App {
   public app: Express;
@@ -42,7 +42,7 @@ class App {
     this.app.use('/categories', categoryRoutes);
     this.app.use('/sub_categories', subCategoryRoutes);
     this.app.use('/prompts', promptRoutes);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   }
 
   private initializeErrorHandling(): void {
