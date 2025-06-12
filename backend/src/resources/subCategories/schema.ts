@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
 export const createSubCategorySchema = z.object({
-  name: z.string().min(1, 'Category name is required'),
+  name: z.string().min(1, 'Sub-category name is required'),
+  category_id: z.number({
+    required_error: 'Category ID is required',
+    invalid_type_error: 'Category ID must be a number',
+  }),
 });
+
 
 export const updateSubCategorySchema = z.object({
   name: z.string().min(1).optional(),

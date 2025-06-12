@@ -62,17 +62,12 @@ class CategoryAPI {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
+ *             $ref: '#/components/schemas/CreateCategory'
  *     responses:
  *       201:
  *         description: Category created
  */
-    this.router.post('/', authenticateJWT, apiLimiter, validateRequest({ bodySchema: createCategorySchema }), this.createCategory);
+    this.router.post('/', authenticateJWT, validateRequest({ bodySchema: createCategorySchema }), this.createCategory);
   /**
  * @openapi
  * categories/{id}:
@@ -86,16 +81,7 @@ class CategoryAPI {
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
+ *           $ref: '#/components/schemas/UpdateCategory'
  *     responses:
  *       200:
  *         description: Category updated
@@ -138,9 +124,25 @@ class CategoryAPI {
   };
 
   private createCategory = async (req: Request, res: Response) => {
-    const category = await this.service.createCategory(req.body);
-    res.status(201).json(category);
-  };
+  try {
+    console.log('📥 body =', req.body);
+
+    const category = await this.service.createCategory(req.body.name);
+
+    return res.status(201).json(category); // ✅ חשוב: return כדי לעצור את הזרימה אחרי התגובה
+  } catch (error) {
+    console.error('❌ Error in createCategory:', error);
+
+    // רק אם עדיין לא נשלחה תגובה
+    if (!res.headersSent) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    // אם כבר נשלחה תגובה, פשוט לא עושים כלום (או אפשר לרשום ללוג בלבד)
+  }
+};
+
+
 
   private updateCategory = async (req: Request, res: Response) => {
     const id = Number(req.params.id);

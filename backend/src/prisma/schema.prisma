@@ -24,8 +24,8 @@ model Category {
 model SubCategory {
   id          Int      @id @default(autoincrement())
   name        String
-  categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
+  category_id  Int
+  category    Category @relation(fields: [category_id], references: [id])
   prompts     Prompt[]
 }
 

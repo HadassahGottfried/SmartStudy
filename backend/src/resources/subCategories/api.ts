@@ -61,13 +61,7 @@ class SubCategoryAPI {
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               categoryId:
- *                 type: number
+ *           $ref: '#/components/schemas/CreateSubCategory'
  *     responses:
  *       201:
  *         description: Created
@@ -87,6 +81,12 @@ class SubCategoryAPI {
  *         required: true
  *         schema:
  *           type: number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateSubCategory'
  *     responses:
  *       200:
  *         description: Updated
