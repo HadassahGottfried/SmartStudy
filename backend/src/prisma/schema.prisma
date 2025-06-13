@@ -16,14 +16,14 @@ model User {
 
 model Category {
   id              Int             @id @default(autoincrement())
-  name            String
+  name            String          @unique
   sub_categories  SubCategory[]
   prompts         Prompt[]
 }
 
 model SubCategory {
   id           Int      @id @default(autoincrement())
-  name         String
+  name         String   @unique
   category_id  Int
   category     Category @relation(fields: [category_id], references: [id])
   prompts      Prompt[]
