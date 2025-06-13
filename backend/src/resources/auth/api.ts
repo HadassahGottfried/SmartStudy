@@ -77,8 +77,8 @@ class AuthAPI {
   };
 
   private generateToken(user: User): string {
-    const adminPhone = process.env.ADMIN_PHONE; 
-    const isAdmin = user.phone === adminPhone;  
+    const adminPhone = process.env.ADMIN_PHONE;
+    const isAdmin = user.phone === adminPhone;
 
     const payload = {
       id: user.id,

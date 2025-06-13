@@ -1,7 +1,7 @@
 import { Router,Request, Response, NextFunction } from 'express';
 import { UserService } from './service';
 import { validateRequest } from '../../middlewares/validateRequest';
-import {  idParamSchema ,updateUserSchema} from './schema';
+import {  idParamSchema ,searchUserSchema,updateUserSchema} from './schema';
 import { authenticateJWT } from '../../middlewares/authMiddleware';
 import { CustomRequest } from './types';
 
@@ -68,9 +68,8 @@ class UserAPI {
      *       200:
      *         description: List of users matching name
      */
-    this.router.get('/search/name', authenticateJWT, this.searchByName);
-
-    
+    this.router.get('/search/name', authenticateJWT,  validateRequest({ querySchema: searchUserSchema }),
+ this.searchByName);
 
     /**
      * @openapi
@@ -98,7 +97,6 @@ class UserAPI {
      */
     this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
 
-   
   }
 
   private getAllUsers = async (req: CustomRequest, res: Response, _next: NextFunction) => {
@@ -112,14 +110,11 @@ class UserAPI {
     res.json(user);
   };
 
-  private searchByName = async (req: CustomRequest, res: Response, _next: NextFunction) => {
-    const { name } = req.query;
-    if (!name || typeof name !== 'string') return res.status(400).json({ message: 'Invalid name' });
-    const users = await this.service.findUsersByName(name);
-    res.json(users);
-  };
-
- 
+ private searchByName = async (req: CustomRequest, res: Response, _next: NextFunction) => {
+  const { name } = req.query as { name: string };
+  const users = await this.service.findUsersByName(name);
+  res.json(users);
+};
 
   private updateUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
     const updated = await this.service.updateUser(req.params.id, req.body);

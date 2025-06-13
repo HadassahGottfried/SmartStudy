@@ -130,7 +130,6 @@ class SubCategoryAPI {
   res.json(result);
 };
 
-
   private getById = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ message: 'Invalid ID' });

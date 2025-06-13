@@ -4,14 +4,13 @@ interface User {
   id: string;
   name: string;
   phone: string;
-  isAdmin?: boolean; // ← כאן מוסיפים
+  isAdmin?: boolean; 
 }
 
 interface AuthState {
   token: string | null;
   user: User | null;
 }
-
 
 const initialState: AuthState = {
   token: null,

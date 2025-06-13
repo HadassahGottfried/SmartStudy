@@ -17,12 +17,12 @@ export class CategoryService {
   }
 
   async createCategory(name: string): Promise<Category> {
-  return this.dal.createCategory({ name });
-}
+    return this.dal.createCategory({ name });
+  }
 
   async updateCategory(id: number, category: Partial<Category>): Promise<Category> {
-    
-    
+
+
     return this.dal.updateCategory(id, category);
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import UserPromptHistory from '../components/UserPromptHistory';
+import UserPromptHistory from '../components/promptHistory';
 import './css/userHistory.css';
 
 const UserHistory: React.FC = () => {

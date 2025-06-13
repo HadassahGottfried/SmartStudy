@@ -5,7 +5,7 @@ import { logout } from '../features/auth/authSlice';
 import { RootState } from '../app/store';
 import axiosInstance from '../services/axiosInstance';
 import './css/dashboard.css';
-import PromptForm from '../components/PromptForm';
+import PromptForm from '../components/promptForm';
 
 interface User {
   id: string;
@@ -21,8 +21,6 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
  const [searchTerm, setSearchTerm] = useState('');
 const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-
-  
 
 useEffect(() => {
   if (user?.isAdmin) {
@@ -81,7 +79,6 @@ useEffect(() => {
   onChange={(e) => setSearchTerm(e.target.value)}
   className="user-search-input"
 />
-
 
     <ul className="user-list">
   {filteredUsers.map((u) => (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './css/registerForm.css';
+import './css/authForm.css';
 
 interface Props {
   onRegister: (name: string, phone: string) => void;
@@ -20,30 +20,33 @@ const RegisterForm: React.FC<Props> = ({ onRegister }) => {
     onRegister(name, phone);
   };
 
-
   return (
-    <form className="register-form" onSubmit={handleSubmit}>
-      <h2>Register</h2>
-      <div>
-        <label>Name:</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Phone:</label>
-        <input
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">Register</button>
-    </form>
+    <form className="auth-form" onSubmit={handleSubmit}>
+  <h2>Register</h2>
+
+  <div className="form-group">
+    <label>Name:</label>
+    <input
+      type="text"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      required
+    />
+  </div>
+
+  <div className="form-group">
+    <label>Phone:</label>
+    <input
+      type="text"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+      required
+    />
+  </div>
+
+  <button type="submit">Register</button>
+</form>
+
   );
 };
 

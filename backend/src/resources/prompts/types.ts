@@ -1,4 +1,3 @@
-// src/resources/prompts/types.ts
 
 import { UserPayload } from "../users/types";
 

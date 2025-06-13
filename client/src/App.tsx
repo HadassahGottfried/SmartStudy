@@ -1,13 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import Register from './pages/register';
+import Login from './pages/login';
 import Dashboard from './pages/dashboard';
-import History from './pages/History';
-import Home from './pages/Home';
+import History from './pages/history';
+import Home from './pages/home';
 import { useSelector } from 'react-redux';
 import { RootState } from './app/store';
-import UserHistory from './pages/UserHistory';
-
+import UserHistory from './pages/userHistory';
 
 function App() {
   const token = useSelector((state: RootState) => state.auth.token);

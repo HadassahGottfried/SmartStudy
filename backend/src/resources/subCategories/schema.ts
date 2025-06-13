@@ -8,7 +8,6 @@ export const createSubCategorySchema = z.object({
   }),
 });
 
-
 export const updateSubCategorySchema = z.object({
   name: z.string().min(1).optional(),
 });

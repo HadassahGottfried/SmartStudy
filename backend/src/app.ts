@@ -1,6 +1,5 @@
 import express, { Express } from 'express';
 import { corsMiddleware } from './middlewares/corsMiddleware';
-import { logger } from './middlewares/loggingMiddleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 
 import userRoutes from './resources/users/api';
@@ -30,9 +29,8 @@ class App {
   }
 
   private initializeMiddlewares(): void {
-    this.app.use(corsMiddleware); // CORS הגדרות
-    this.app.use(logger);         // Logger (morgan)
-    this.app.use(express.json()); // JSON body parser
+    this.app.use(corsMiddleware); 
+    this.app.use(express.json()); 
     this.app.use(express.urlencoded({ extended: true }));
   }
 
@@ -54,9 +52,9 @@ class App {
       console.log('\n🚦 Shutting down server...');
       try {
         await db.prisma.$disconnect();
-        console.log('✅ Prisma disconnected gracefully');
+        console.log('Prisma disconnected gracefully');
       } catch (error) {
-        console.error('❌ Error disconnecting Prisma:', error);
+        console.error('Error disconnecting Prisma:', error);
       } finally {
         process.exit(0);
       }
@@ -65,7 +63,7 @@ class App {
 
   public listen(): void {
     this.app.listen(this.port, () => {
-      console.log(`🚀 Server is running on port ${this.port}`);
+      console.log(`Server is running on port ${this.port}`);
     });
   }
 }

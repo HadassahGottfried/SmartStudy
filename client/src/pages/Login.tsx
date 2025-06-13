@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from '../components/LoginForm';
+import LoginForm from '../components/loginForm';
 import { login } from '../services/auth';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../features/auth/authSlice';
@@ -25,6 +25,15 @@ const Login: React.FC = () => {
   return (
     <div className="page-container">
       <LoginForm onLogin={handleLogin} />
+
+      <div style={{ marginTop: '10px', textAlign: 'center' }}>
+        <button
+          onClick={() => navigate('/register')}
+          className="register-button"
+        >
+          Don't have an account? Register
+        </button>
+      </div>
     </div>
   );
 };

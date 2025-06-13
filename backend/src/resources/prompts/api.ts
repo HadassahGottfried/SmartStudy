@@ -61,7 +61,7 @@ class PromptAPI {
  *       404:
  *         description: Not found
  */
-  this.router.get('/user/:userId', authenticateJWT,validateRequest({ paramsSchema: userIdParamSchema }), this.getPromptsByUserId);
+    this.router.get('/user/:userId', authenticateJWT, validateRequest({ paramsSchema: userIdParamSchema }), this.getPromptsByUserId);
 
     /**
      * @openapi
@@ -83,7 +83,7 @@ class PromptAPI {
      */
 
     this.router.post('/', authenticateJWT, validateRequest({ bodySchema: createPromptSchema }), this.create);
-    
+
   }
 
   private getAll = async (_req: Request, res: Response) => {
@@ -101,61 +101,48 @@ class PromptAPI {
   };
 
   private getPromptsByUserId = async (req: CustomRequest, res: Response) => {
-  const requester = req.user;
+    const requester = req.user;
 
-  if (!requester?.isAdmin) {
-    return res.status(403).json({ message: 'Access denied: admin only' });
-  }
+    if (!requester?.isAdmin) {
+      return res.status(403).json({ message: 'Access denied: admin only' });
+    }
 
-  const userId = req.params.userId;
+    const { userId } = req.params;
 
-  if (!userId) {
-    return res.status(400).json({ message: 'Missing user ID' });
-  }
-
-  try {
     const prompts = await this.service.getByUserId(userId);
     res.json(prompts);
-  } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
+  };
 
   private create = async (req: CustomRequest, res: Response) => {
     const { prompt, category_id, sub_category_id } = req.body;
     const user_id = req.user?.id;
     if (!user_id) return res.status(403).json({ message: 'Unauthorized' });
 
-    try {
-      const categoryName = await this.service.getCategoryNameById(category_id);
-      const subCategoryName = await this.service.getSubCategoryNameById(sub_category_id);
+    const categoryName = await this.service.getCategoryNameById(category_id);
+    const subCategoryName = await this.service.getSubCategoryNameById(sub_category_id);
 
-      if (!categoryName || !subCategoryName) {
-        return res.status(400).json({ message: 'Invalid category or sub-category ID' });
-      }
-
-      const lesson = await this.openAIService.generateLesson(
-        prompt,
-        categoryName,
-        subCategoryName
-      );
-
-      const savedPrompt = await this.service.create({
-        user_id,
-        category_id,
-        sub_category_id,
-        prompt,
-        response: lesson,
-        created_at: new Date(),
-      });
-
-      res.status(201).json(savedPrompt);
-    } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+    if (!categoryName || !subCategoryName) {
+      return res.status(400).json({ message: 'Invalid category or sub-category ID' });
     }
+
+    const lesson = await this.openAIService.generateLesson(
+      prompt,
+      categoryName,
+      subCategoryName
+    );
+
+    const savedPrompt = await this.service.create({
+      user_id,
+      category_id,
+      sub_category_id,
+      prompt,
+      response: lesson,
+      created_at: new Date(),
+    });
+
+    res.status(201).json(savedPrompt);
   };
-  
-  
+
+
 }
 export default new PromptAPI().router;

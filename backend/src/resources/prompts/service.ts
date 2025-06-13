@@ -21,19 +21,15 @@ export class PromptService {
     return this.dal.createPrompt(data);
   }
 
-  
-
   async delete(id: number): Promise<Prompt> {
     return this.dal.deletePrompt(id);
   }
 
-  // ✅ פונקציה לשליפת שם קטגוריה לפי ID
   async getCategoryNameById(id: number): Promise<string | null> {
     const category = await db.prisma.category.findUnique({ where: { id } });
     return category?.name || null;
   }
 
-  // ✅ פונקציה לשליפת שם תת־קטגוריה לפי ID
   async getSubCategoryNameById(id: number): Promise<string | null> {
     const subCategory = await db.prisma.subCategory.findUnique({ where: { id } });
     return subCategory?.name || null;

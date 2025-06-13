@@ -5,13 +5,11 @@ export const getCategories = async () => {
   return res.data;
 };
 
-// שליפת תתי־קטגוריות לפי category_id
 export const getSubCategories = async (categoryId: number) => {
   const res = await axiosInstance.get(`/sub_categories?category_id=${categoryId}`);
   return res.data;
 };
 
-// שליחת prompt חדש וקבלת שיעור מה־AI
 export const createPrompt = async (data: {
   prompt: string;
   category_id: number;
@@ -21,7 +19,6 @@ export const createPrompt = async (data: {
   return res.data;
 };
 
-// שליפת כל הפרומפטים של המשתמש המחובר
 export const getMyPrompts = async () => {
   const res = await axiosInstance.get('/prompts/my');
   return res.data;

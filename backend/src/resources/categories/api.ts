@@ -115,24 +115,20 @@ class CategoryAPI {
   };
 
   private getCategoryById = async (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ message: 'Invalid category ID' });
+  const id = Number(req.params.id); // מובטח על ידי Zod שהוא מספר תקני
 
-    const category = await this.service.getCategoryById(id);
-    if (!category) return res.status(404).json({ message: 'Category not found' });
-    res.json(category);
-  };
+  const category = await this.service.getCategoryById(id);
+  if (!category) return res.status(404).json({ message: 'Category not found' });
+
+  res.json(category);
+};
+
 
   private createCategory = async (req: Request, res: Response) => {
-    try {
-      const category = await this.service.createCategory(req.body.name);
-      return res.status(201).json(category);
-    } catch (error) {
-      if (!res.headersSent) {
-        return res.status(500).json({ message: 'Internal server error' });
-      }
-    }
+    const category = await this.service.createCategory(req.body.name);
+    return res.status(201).json(category);
   };
+
   private updateCategory = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ message: 'Invalid category ID' });
