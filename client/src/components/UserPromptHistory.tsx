@@ -9,15 +9,25 @@ const UnifiedPromptHistory: React.FC = () => {
   const { userId } = useParams();
   const [prompts, setPrompts] = useState<any[]>([]);
   const [userName, setUserName] = useState<string | null>(null);
+console.log("userId from params:", userId);
 
-  useEffect(() => {
+ useEffect(() => {
   if (userId) {
-    getPromptsByUserId(userId).then(setPrompts);
+    console.log("Getting prompts for user:", userId);
+    getPromptsByUserId(userId).then((data) => {
+      console.log("Prompt results:", data);
+      setPrompts(data);
+    });
+
     axiosInstance.get(`/users/${userId}`).then((res) => {
+      console.log("User name:", res.data.name);
       setUserName(res.data.name);
     });
   } else {
-    getMyPrompts().then(setPrompts);
+    getMyPrompts().then((data) => {
+      console.log("My prompts:", data);
+      setPrompts(data);
+    });
   }
 }, [userId]);
 

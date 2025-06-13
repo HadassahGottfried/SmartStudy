@@ -1,60 +1,86 @@
 .dashboard-container {
+  padding: 20px;
   max-width: 900px;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
-  position: relative;
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin-bottom: 40px;
-}
-
-.dashboard-header h1 {
-  font-size: 2rem;
-  color: #333;
-  text-align: center;
   margin: 0 auto;
 }
 
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+}
+
 .logout-button {
-  position: absolute;
-  right: 0;
-  top: 0;
   background-color: #007bff;
   color: white;
-  padding: 6px 12px;
-  font-size: 0.9rem;
   border: none;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .logout-button:hover {
   background-color: #0056b3;
 }
-.user-search-input {
-  margin-bottom: 20px;
-  padding: 8px;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+
+.dashboard-header {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
 }
-.user-list li {
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.history-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s;
-  padding: 8px;
-  border-radius: 6px;
+}
+
+.history-button:hover {
+  background-color: #0056b3;
+}
+
+.prompt-form-container {
+  margin-top: 40px;
+}
+
+.user-search-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 15px auto;
+  display: block;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.user-list li {
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  transition: background-color 0.2s ease;
 }
 
 .user-list li:hover {
-  background-color: #f1f1f1;
+  background-color: #eef4ff;
 }

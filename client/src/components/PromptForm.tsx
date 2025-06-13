@@ -32,7 +32,7 @@ const PromptForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!prompt || !categoryId || !subCategoryId) {
-      setError('אנא מלאי את כל השדות');
+      setError('Please fill in all the fields');
       return;
     }
 
@@ -49,7 +49,7 @@ const PromptForm: React.FC = () => {
 
       setResponse(result.response);
     } catch (err) {
-      setError('ארעה שגיאה בעת יצירת השיעור');
+      setError('An error occurred while creating the lesson');
     } finally {
       setIsLoading(false);
     }

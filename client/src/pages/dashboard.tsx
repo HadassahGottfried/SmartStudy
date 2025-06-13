@@ -59,38 +59,47 @@ useEffect(() => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>Welcome to the Learning Platform</h1>
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
-      </div>
-      {!user?.isAdmin && (
-        <div className="prompt-form-container">
-          <PromptForm />
-        </div>
-      )}
-      {user?.isAdmin && (
-  <>
-    <h2>Registered Users</h2>
+  <div className="top-bar">
+    <button className="logout-button" onClick={handleLogout}>Logout</button>
+  </div>
 
-    <input
-  type="text"
-  placeholder="Search by name..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  className="user-search-input"
-/>
+  <div className="dashboard-header">
+  <h1 className="dashboard-title">Welcome to the Learning Platform</h1>
+  {!user?.isAdmin && (
+    <button className="history-button" onClick={() => navigate('/history')}>
+      📚 My History
+    </button>
+  )}
+</div>
 
-    <ul className="user-list">
-  {filteredUsers.map((u) => (
-    <li key={u.id} onClick={() => handleUserClick(u.id)}>
-      <strong>{u.name}</strong> - {u.phone}
-    </li>
-  ))}
-</ul>
-  </>
-)}
 
+  {!user?.isAdmin && (
+    <div className="prompt-form-container">
+      <PromptForm />
     </div>
+  )}
+
+  {user?.isAdmin && (
+    <>
+      <h2>Registered Users</h2>
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="user-search-input"
+      />
+      <ul className="user-list">
+        {filteredUsers.map((u) => (
+          <li key={u.id} onClick={() => handleUserClick(u.id)}>
+            <strong>{u.name}</strong> - {u.phone}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</div>
+
   );
 };
 
