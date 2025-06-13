@@ -77,11 +77,16 @@ class AuthAPI {
   };
 
   private generateToken(user: User): string {
+    const adminPhone = process.env.ADMIN_PHONE; 
+    const isAdmin = user.phone === adminPhone;  
+
     const payload = {
       id: user.id,
       name: user.name,
-      phone: user.phone
+      phone: user.phone,
+      isAdmin: isAdmin, // או פשוט: isAdmin, זה אותו דבר
     };
+
 
     return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '2h' });
   }

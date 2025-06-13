@@ -1,5 +1,5 @@
 import db from '../../utils/db-conn';
-import { Category } from './types';
+import { Category } from '@prisma/client';
 
 export class CategoryDAL {
   async getAllCategories(): Promise<Category[]> {
@@ -7,31 +7,21 @@ export class CategoryDAL {
   }
 
   async getCategoryById(id: number): Promise<Category | null> {
-    return db.prisma.category.findUnique({
-      where: { id }
-    });
+    return db.prisma.category.findUnique({ where: { id } });
   }
 
-  async createCategory(data: { name: string }): Promise<Category> {
-  return db.prisma.category.create({
-    data: {
-      name: data.name  
-    }
-  });
-}
+  async createCategory(data: Omit<Category, 'id'>): Promise<Category> {
+    return db.prisma.category.create({ data });
+  }
 
-
-
-  async updateCategory(id: number, category: Partial<Category>): Promise<Category> {
+  async updateCategory(id: number, data: Partial<Category>): Promise<Category> {
     return db.prisma.category.update({
       where: { id },
-      data: category
+      data,
     });
   }
 
   async deleteCategory(id: number): Promise<Category> {
-    return db.prisma.category.delete({
-      where: { id }
-    });
+    return db.prisma.category.delete({ where: { id } });
   }
 }

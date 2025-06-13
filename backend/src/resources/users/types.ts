@@ -16,6 +16,8 @@ export interface UserPayload {
   id: string;
   name: string;
   phone: string;
+      isAdmin?: boolean;
+
 }
 
 export interface CustomRequest extends Request {

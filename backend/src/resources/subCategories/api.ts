@@ -113,10 +113,23 @@ class SubCategoryAPI {
     this.router.delete('/:id', authenticateJWT, apiLimiter, validateRequest({ paramsSchema: idParamSchema }), this.delete);
   }
 
-  private getAll = async (_req: Request, res: Response) => {
-    const result = await this.service.getAll();
-    res.json(result);
-  };
+  private getAll = async (req: Request, res: Response) => {
+  const { category_id } = req.query;
+
+  if (category_id) {
+    const id = Number(category_id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'Invalid category_id' });
+    }
+
+    const result = await this.service.getByCategoryId(id);
+    return res.json(result);
+  }
+
+  const result = await this.service.getAll();
+  res.json(result);
+};
+
 
   private getById = async (req: Request, res: Response) => {
     const id = Number(req.params.id);

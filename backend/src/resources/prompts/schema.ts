@@ -6,6 +6,6 @@ export const createPromptSchema = z.object({
   sub_category_id: z.number(),
 });
 
-export const idParamSchema = z.object({
-  id: z.string().regex(/^\d+$/, 'ID must be a number'),
+export const userIdParamSchema = z.object({
+  userId: z.string().uuid({ message: 'Invalid user ID format' }),
 });

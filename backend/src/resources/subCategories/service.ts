@@ -8,8 +8,13 @@ export class SubCategoryService {
     return this.dal.getAllSubCategories();
   }
 
+  
+
   async getById(id: number): Promise<PrismaSubCategory | null> {
     return this.dal.getSubCategoryById(id);
+  }
+  async getByCategoryId(categoryId: number): Promise<PrismaSubCategory[]> {
+    return this.dal.getByCategoryId(categoryId);
   }
 
   async create(data: { name: string; category_id: number | string }): Promise<PrismaSubCategory> {

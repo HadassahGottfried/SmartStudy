@@ -4,7 +4,7 @@ import { OpenAIService } from '../../utils/openaiService';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { authenticateJWT } from '../../middlewares/authMiddleware';
 import { CustomRequest } from '../users/types';
-import { createPromptSchema,idParamSchema } from './schema';
+import { createPromptSchema, userIdParamSchema } from './schema';
 
 class PromptAPI {
   public router = Router();
@@ -16,18 +16,18 @@ class PromptAPI {
   }
 
   private initializeRoutes() {
-   /**
- * @openapi
- * /prompts:
- *   get:
- *     summary: Get all prompts
- *     tags: [Prompts]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: A list of prompts
- */
+    /**
+  * @openapi
+  * /prompts:
+  *   get:
+  *     summary: Get all prompts
+  *     tags: [Prompts]
+  *     security:
+  *       - bearerAuth: []
+  *     responses:
+  *       200:
+  *         description: A list of prompts
+  */
     this.router.get('/', authenticateJWT, this.getAll);
 
     /**
@@ -61,91 +61,65 @@ class PromptAPI {
  *       404:
  *         description: Not found
  */
-    this.router.get('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.getById);
+  this.router.get('/user/:userId', authenticateJWT,validateRequest({ paramsSchema: userIdParamSchema }), this.getPromptsByUserId);
 
-/**
- * @openapi
- * /prompts:
- *   post:
- *     summary: Create a new prompt and generate lesson using OpenAI
- *     tags: [Prompts]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreatePrompt'
- *     responses:
- *       201:
- *         description: Created prompt
- */
+    /**
+     * @openapi
+     * /prompts:
+     *   post:
+     *     summary: Create a new prompt and generate lesson using OpenAI
+     *     tags: [Prompts]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/CreatePrompt'
+     *     responses:
+     *       201:
+     *         description: Created prompt
+     */
 
-    this.router.post('/', authenticateJWT,validateRequest({ bodySchema: createPromptSchema }), this.create);
- /**
- * @openapi
- * /prompts/{id}:
- *   put:
- *     summary: Update prompt
- *     tags: [Prompts]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: Updated
- */
-    this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.update);
-/**
- * @openapi
- * /prompts/{id}:
- *   delete:
- *     summary: Delete prompt
- *     tags: [Prompts]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       204:
- *         description: Deleted
- */
-    this.router.delete('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.delete);
+    this.router.post('/', authenticateJWT, validateRequest({ bodySchema: createPromptSchema }), this.create);
+    
   }
 
   private getAll = async (_req: Request, res: Response) => {
     const result = await this.service.getAll();
     res.json(result);
   };
-private getMyPrompts = async (req: CustomRequest, res: Response) => {
-  console.log('📦 req.user =', req.user);
+  private getMyPrompts = async (req: CustomRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
 
-  const userId = req.user?.id;
-  if (!userId) {
-    console.log('❌ אין userId בטוקן!');
-    return res.status(403).json({ message: 'Unauthorized' });
+    const prompts = await this.service.getByUserId(userId);
+    res.json(prompts);
+  };
+
+  private getPromptsByUserId = async (req: CustomRequest, res: Response) => {
+  const requester = req.user;
+
+  if (!requester?.isAdmin) {
+    return res.status(403).json({ message: 'Access denied: admin only' });
   }
 
-  const prompts = await this.service.getByUserId(userId);
-  res.json(prompts);
-};
+  const userId = req.params.userId;
 
-  private getById = async (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const result = await this.service.getById(id);
-    if (!result) return res.status(404).json({ message: 'Prompt not found' });
-    res.json(result);
-  };
+  if (!userId) {
+    return res.status(400).json({ message: 'Missing user ID' });
+  }
+
+  try {
+    const prompts = await this.service.getByUserId(userId);
+    res.json(prompts);
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
   private create = async (req: CustomRequest, res: Response) => {
@@ -153,29 +127,35 @@ private getMyPrompts = async (req: CustomRequest, res: Response) => {
     const user_id = req.user?.id;
     if (!user_id) return res.status(403).json({ message: 'Unauthorized' });
 
-    const lesson = await this.openAIService.generateLesson(prompt);
-    const savedPrompt = await this.service.create({
-      user_id,
-      category_id,
-      sub_category_id,
-      prompt,
-      response: lesson,
-      created_at: new Date()
-    });
-    res.status(201).json(savedPrompt);
-  };
+    try {
+      const categoryName = await this.service.getCategoryNameById(category_id);
+      const subCategoryName = await this.service.getSubCategoryNameById(sub_category_id);
 
-  private update = async (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    const result = await this.service.update(id, req.body);
-    res.json(result);
-  };
+      if (!categoryName || !subCategoryName) {
+        return res.status(400).json({ message: 'Invalid category or sub-category ID' });
+      }
 
-  private delete = async (req: Request, res: Response) => {
-    const id = Number(req.params.id);
-    await this.service.delete(id);
-    res.status(204).send();
+      const lesson = await this.openAIService.generateLesson(
+        prompt,
+        categoryName,
+        subCategoryName
+      );
+
+      const savedPrompt = await this.service.create({
+        user_id,
+        category_id,
+        sub_category_id,
+        prompt,
+        response: lesson,
+        created_at: new Date(),
+      });
+
+      res.status(201).json(savedPrompt);
+    } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+    }
   };
+  
+  
 }
-
 export default new PromptAPI().router;

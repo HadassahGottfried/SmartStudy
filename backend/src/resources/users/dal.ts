@@ -1,51 +1,41 @@
 import db from '../../utils/db-conn';
-import { User as PrismaUser } from '@prisma/client';
-import { PublicUser } from './types';
+import { User } from '@prisma/client';
 
 export class UserDAL {
-  async getAllUsers(): Promise<PublicUser[]> {
-    return db.prisma.user.findMany({
-      select: { id: true, name: true, phone: true }
-    });
+  async getAllUsers(): Promise<User[]> {
+    return db.prisma.user.findMany();
   }
 
-  async getUserById(id: string): Promise<PrismaUser | null> {
+  async getUserById(id: string): Promise<User | null> {
     return db.prisma.user.findUnique({ where: { id } });
   }
 
-  async findUsersByName(name: string): Promise<PublicUser[]> {
+  async findUsersByName(name: string): Promise<User[]> {
     return db.prisma.user.findMany({
       where: {
         name: {
           contains: name,
-          mode: 'insensitive'
-        }
+          mode: 'insensitive',
+        },
       },
-      select: { id: true, name: true, phone: true }
     });
   }
 
-  // ✅ נכון - גרסה חדשה
-async createUser(data: { name: string; phone: string }): Promise<PrismaUser> {
-  return db.prisma.user.create({ data });
-}
+  async createUser(data: Omit<User, 'id'>): Promise<User> {
+    return db.prisma.user.create({ data });
+  }
 
-
-  async updateUser(id: string, data: Partial<PrismaUser>): Promise<PrismaUser> {
+  async updateUser(id: string, data: Partial<User>): Promise<User> {
     return db.prisma.user.update({ where: { id }, data });
   }
 
-  async deleteUser(id: string): Promise<PrismaUser> {
-    return db.prisma.user.delete({ where: { id } });
-  }
-
-  async getUserByPhone(phone: string): Promise<PrismaUser | null> {
+  async getUserByPhone(phone: string): Promise<User | null> {
     return db.prisma.user.findUnique({ where: { phone } });
   }
 
-  async getUserByPhoneAndName(phone: string, name: string): Promise<PrismaUser | null> {
+  async getUserByPhoneAndName(phone: string, name: string): Promise<User | null> {
     return db.prisma.user.findFirst({
-      where: { phone, name }
+      where: { phone, name },
     });
   }
 }

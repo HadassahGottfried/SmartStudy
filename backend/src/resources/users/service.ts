@@ -25,10 +25,6 @@ export class UserService {
     return this.dal.updateUser(id, data);
   }
 
-  async deleteUser(id: string) {
-    return this.dal.deleteUser(id);
-  }
-
   async getUserByPhone(phone: string) {
     return this.dal.getUserByPhone(phone);
   }

@@ -11,16 +11,16 @@ class Database {
     try {
       await this.prisma.$disconnect();
     } catch (err) {
-      console.error('❌ Failed to disconnect Prisma:', err);
+      console.error('Failed to disconnect Prisma:', err);
     }
   }
 
   public async testConnection(): Promise<void> {
     try {
       await this.prisma.$connect();
-      console.log('✅ Prisma connected successfully');
+      console.log('Prisma connected successfully');
     } catch (err) {
-      console.error('❌ Prisma connection failed:', err);
+      console.error('Prisma connection failed:', err);
     }
   }
 }

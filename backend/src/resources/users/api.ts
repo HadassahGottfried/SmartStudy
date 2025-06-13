@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction } from 'express';
+import { Router,Request, Response, NextFunction } from 'express';
 import { UserService } from './service';
 import { validateRequest } from '../../middlewares/validateRequest';
 import {  idParamSchema ,updateUserSchema} from './schema';
@@ -98,28 +98,10 @@ class UserAPI {
      */
     this.router.put('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), validateRequest({ bodySchema: updateUserSchema }), this.updateUser);
 
-    /**
-     * @openapi
-     * /users/{id}:
-     *   delete:
-     *     summary: Delete user
-     *     tags: [Users]
-     *     security:
-     *       - bearerAuth: []
-     *     parameters:
-     *       - name: id
-     *         in: path
-     *         required: true
-     *         schema:
-     *           type: string
-     *     responses:
-     *       204:
-     *         description: User deleted
-     */
-    this.router.delete('/:id', authenticateJWT, validateRequest({ paramsSchema: idParamSchema }), this.deleteUser);
+   
   }
 
-  private getAllUsers = async (_req: CustomRequest, res: Response, _next: NextFunction) => {
+  private getAllUsers = async (req: CustomRequest, res: Response, _next: NextFunction) => {
     const users = await this.service.getAllUsers();
     res.json(users);
   };
@@ -144,10 +126,6 @@ class UserAPI {
     res.json(updated);
   };
 
-  private deleteUser = async (req: CustomRequest, res: Response, _next: NextFunction) => {
-    await this.service.deleteUser(req.params.id);
-    res.status(204).send();
-  };
 }
 
 export default new UserAPI().router;
