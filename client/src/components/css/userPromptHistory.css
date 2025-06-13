@@ -1,0 +1,40 @@
+.prompt-history-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.prompt-history-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.prompt-card {
+  background-color: #fafafa;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.prompt-card p {
+  margin: 10px 0;
+}
+
+.prompt-card .timestamp {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.prompt-card strong {
+  color: #444;
+}
+.user-history-header {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}

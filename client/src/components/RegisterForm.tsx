@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './css/registerForm.css';
 
 interface Props {
   onRegister: (name: string, phone: string) => void;
@@ -10,14 +11,21 @@ const RegisterForm: React.FC<Props> = ({ onRegister }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const isPhoneValid = /^\d{10}$/.test(phone);
+    if (!isPhoneValid) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
     onRegister(name, phone);
   };
 
+
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>הרשמה</h2>
+    <form className="register-form" onSubmit={handleSubmit}>
+      <h2>Register</h2>
       <div>
-        <label>שם:</label>
+        <label>Name:</label>
         <input
           type="text"
           value={name}
@@ -26,7 +34,7 @@ const RegisterForm: React.FC<Props> = ({ onRegister }) => {
         />
       </div>
       <div>
-        <label>טלפון:</label>
+        <label>Phone:</label>
         <input
           type="text"
           value={phone}
@@ -34,7 +42,7 @@ const RegisterForm: React.FC<Props> = ({ onRegister }) => {
           required
         />
       </div>
-      <button type="submit">הירשם</button>
+      <button type="submit">Register</button>
     </form>
   );
 };

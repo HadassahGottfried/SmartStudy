@@ -1,5 +1,5 @@
-// src/components/LoginForm.tsx
 import React, { useState } from 'react';
+import './css/loginForm.css';
 
 interface Props {
   onLogin: (name: string, phone: string) => void;
@@ -10,15 +10,21 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onLogin(name, phone);
-  };
+  e.preventDefault();
+  const isPhoneValid = /^\d{10}$/.test(phone);
+  if (!isPhoneValid) {
+    alert('Please enter a valid 10-digit phone number.');
+    return;
+  }
+
+  onLogin(name, phone);
+};
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>התחברות</h2>
+    <form className="login-form" onSubmit={handleSubmit}>
+      <h2>Login</h2>
       <div>
-        <label>שם:</label>
+        <label>Name:</label>
         <input
           type="text"
           value={name}
@@ -27,7 +33,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
         />
       </div>
       <div>
-        <label>טלפון:</label>
+        <label>Phone:</label>
         <input
           type="text"
           value={phone}
@@ -35,7 +41,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
           required
         />
       </div>
-      <button type="submit">התחבר</button>
+      <button type="submit">Login</button>
     </form>
   );
 };

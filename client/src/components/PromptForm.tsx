@@ -1,55 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import { getCategories, getSubCategories, createPrompt } from '../services/prompt';
+import { createPrompt, getCategories, getSubCategories } from '../services/prompt';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
+import ReactMarkdown from 'react-markdown';
+import './css/promptForm.css';
 
 const PromptForm: React.FC = () => {
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [subCategoryId, setSubCategoryId] = useState<number | null>(null);
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
+
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    getCategories().then(setCategories);    
-    getSubCategories().then(setSubCategories);
+    getCategories().then(setCategories);
   }, []);
+
+  useEffect(() => {
+    if (categoryId !== null) {
+      getSubCategories(categoryId).then(setSubCategories);
+      setSubCategoryId(null);
+    } else {
+      setSubCategories([]);
+    }
+  }, [categoryId]);
 
   const handleSubmit = async () => {
     if (!prompt || !categoryId || !subCategoryId) {
-      alert('נא למלא את כל השדות');
+      alert('Please fill in all fields');
       return;
     }
 
-    const result = await createPrompt({ prompt, category_id: categoryId, sub_category_id: subCategoryId });
+    const result = await createPrompt({
+      prompt,
+      category_id: categoryId,
+      sub_category_id: subCategoryId,
+    });
+
     setResponse(result.response);
   };
 
+  const isFormValid = prompt && categoryId && subCategoryId;
+
   return (
-    <div>
-      <h2>שיעור חדש</h2>
+    <div className="prompt-form">
+      <h2>New Lesson</h2>
 
-      <select onChange={(e) => setCategoryId(Number(e.target.value))} defaultValue="">
-        <option value="" disabled>בחר קטגוריה</option>
-        {categories.map((cat: any) => (
-          <option key={cat.id} value={cat.id}>{cat.name}</option>
-        ))}
-      </select>
+      <div>
+        <label>Category:</label>
+        <select
+          value={categoryId ?? ''}
+          onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : null)}
+        >
+          <option value="">Select category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <select onChange={(e) => setSubCategoryId(Number(e.target.value))} defaultValue="">
-        <option value="" disabled>בחר תת־קטגוריה</option>
-        {subCategories.map((sub: any) => (
-          <option key={sub.id} value={sub.id}>{sub.name}</option>
-        ))}
-      </select>
+      <div>
+        <label>Subcategory:</label>
+        <select
+          value={subCategoryId ?? ''}
+          onChange={(e) => setSubCategoryId(e.target.value ? Number(e.target.value) : null)}
+          disabled={!categoryId}
+        >
+          <option value="">Select subcategory</option>
+          {subCategories.map((sub) => (
+            <option key={sub.id} value={sub.id}>
+              {sub.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="מה את רוצה ללמוד?" />
+      <div>
+        <label>What would you like to learn?</label>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="e.g., Explain black holes"
+        />
+      </div>
 
-      <button onClick={handleSubmit}>שלח</button>
+      <button onClick={handleSubmit} disabled={!isFormValid}>
+        Submit
+      </button>
 
       {response && (
-        <div>
-          <h3>תשובת ה-AI:</h3>
-          <p>{response}</p>
+        <div className="response-box">
+          <ReactMarkdown>{response}</ReactMarkdown>
         </div>
       )}
     </div>

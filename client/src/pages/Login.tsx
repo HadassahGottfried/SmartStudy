@@ -1,24 +1,32 @@
-// pages/Login.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import { login } from '../services/auth';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../features/auth/authSlice';
+import './css/login.css';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async (name: string, phone: string) => {
     try {
-      await login({ name, phone });
-      alert('התחברת בהצלחה!');
-      navigate('/dashboard'); // ⬅ מעבר לדשבורד
+      const { token, user } = await login({ name, phone });
+      dispatch(loginSuccess({ token, user }));
+      localStorage.setItem('token', token);
+      navigate('/dashboard');
     } catch (error) {
       console.error(error);
-      alert('שגיאה בהתחברות');
+      alert('Login failed');
     }
   };
 
-  return <LoginForm onLogin={handleLogin} />;
+  return (
+    <div className="page-container">
+      <LoginForm onLogin={handleLogin} />
+    </div>
+  );
 };
 
 export default Login;

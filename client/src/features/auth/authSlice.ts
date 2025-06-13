@@ -1,9 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+interface User {
+  id: string;
+  name: string;
+  phone: string;
+  isAdmin?: boolean; // ← כאן מוסיפים
+}
+
 interface AuthState {
   token: string | null;
-  user: { id: string; name: string; phone: string } | null;
+  user: User | null;
 }
+
 
 const initialState: AuthState = {
   token: null,
