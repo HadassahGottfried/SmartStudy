@@ -12,6 +12,8 @@ const PromptForm: React.FC = () => {
   const [response, setResponse] = useState('');
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -30,17 +32,27 @@ const PromptForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!prompt || !categoryId || !subCategoryId) {
-      alert('Please fill in all fields');
+      setError('אנא מלאי את כל השדות');
       return;
     }
 
-    const result = await createPrompt({
-      prompt,
-      category_id: categoryId,
-      sub_category_id: subCategoryId,
-    });
+    setIsLoading(true);
+    setResponse('');
+    setError('');
 
-    setResponse(result.response);
+    try {
+      const result = await createPrompt({
+        prompt,
+        category_id: categoryId,
+        sub_category_id: subCategoryId,
+      });
+
+      setResponse(result.response);
+    } catch (err) {
+      setError('ארעה שגיאה בעת יצירת השיעור');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isFormValid = prompt && categoryId && subCategoryId;
@@ -89,11 +101,20 @@ const PromptForm: React.FC = () => {
         />
       </div>
 
-      <button onClick={handleSubmit} disabled={!isFormValid}>
+      <button onClick={handleSubmit} disabled={!isFormValid || isLoading}>
         Submit
       </button>
 
-      {response && (
+      {error && <p className="error-message">{error}</p>}
+
+      {isLoading && (
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Generating your lesson...</p>
+        </div>
+      )}
+
+      {!isLoading && response && (
         <div className="response-box">
           <ReactMarkdown>{response}</ReactMarkdown>
         </div>

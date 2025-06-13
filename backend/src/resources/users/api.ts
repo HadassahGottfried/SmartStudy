@@ -68,8 +68,7 @@ class UserAPI {
      *       200:
      *         description: List of users matching name
      */
-    this.router.get('/search/name', authenticateJWT,  validateRequest({ querySchema: searchUserSchema }),
- this.searchByName);
+    this.router.get('/search/name', authenticateJWT,  validateRequest({ querySchema: searchUserSchema }), this.searchByName);
 
     /**
      * @openapi

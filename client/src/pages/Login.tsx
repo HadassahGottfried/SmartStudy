@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/loginForm';
 import { login } from '../services/auth';
@@ -9,6 +9,7 @@ import './css/login.css';
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [serverError, setServerError] = useState('');
 
   const handleLogin = async (name: string, phone: string) => {
     try {
@@ -18,22 +19,14 @@ const Login: React.FC = () => {
       navigate('/dashboard');
     } catch (error) {
       console.error(error);
-      alert('Login failed');
+      setServerError('Login failed: User not found or invalid credentials.');
     }
   };
 
   return (
     <div className="page-container">
       <LoginForm onLogin={handleLogin} />
-
-      <div style={{ marginTop: '10px', textAlign: 'center' }}>
-        <button
-          onClick={() => navigate('/register')}
-          className="register-button"
-        >
-          Don't have an account? Register
-        </button>
-      </div>
+      {serverError && <p className="error-message">{serverError}</p>}
     </div>
   );
 };
