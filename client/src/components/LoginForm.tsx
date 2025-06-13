@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/authForm.css';
 
 interface Props {
@@ -9,6 +10,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +45,20 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
         />
       </div>
       <button type="submit">Login</button>
-
+      
       {error && <p className="error-message">{error}</p>}
+      <div className="register-wrapper">
+        <p className="register-text">Don't have an account yet?</p>
+        <button
+          type="button"
+          className="register-button"
+          onClick={() => navigate('/register')}
+        >
+          Register
+        </button>
+      </div>
+
+
     </form>
   );
 };
