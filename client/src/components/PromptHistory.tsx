@@ -15,11 +15,11 @@ const PromptHistory: React.FC = () => {
       {prompts.map((p: any) => (
                 <div key={p.id} className="prompt-card">
 
-          <p><strong>📂 קטגוריה:</strong> {p.category?.name}</p>
-          <p><strong>📁 תת־קטגוריה:</strong> {p.sub_category?.name}</p>
-          <p><strong>📝 פרומפט:</strong> {p.prompt}</p>
+          <p><strong>📂 Category:</strong> {p.category?.name}</p>
+          <p><strong>📁 Sub-category:</strong> {p.sub_category?.name}</p>
+          <p><strong>📝 Prompt:</strong> {p.prompt}</p>
           <div>
-            <strong>📚 שיעור:</strong>
+            <strong>📚 Losson:</strong>
             <ReactMarkdown>{p.response}</ReactMarkdown>
           </div>
           <p className="timestamp">
